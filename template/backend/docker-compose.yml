@@ -17,6 +17,10 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    depends_on:
+      - ambev.developerevaluation.database
+      - ambev.developerevaluation.nosql
+      - ambev.developerevaluation.cache
 
   ambev.developerevaluation.database:
     container_name: ambev_developer_evaluation_database

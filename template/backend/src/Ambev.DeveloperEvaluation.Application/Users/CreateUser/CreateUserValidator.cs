@@ -1,4 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Enums;
+﻿using Ambev.DeveloperEvaluation.Domain.Enums.Usres;
 using Ambev.DeveloperEvaluation.Domain.Validation;
 using FluentValidation;
 

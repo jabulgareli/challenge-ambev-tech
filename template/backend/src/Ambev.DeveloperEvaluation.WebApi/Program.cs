@@ -70,6 +70,12 @@ public class Program
 
             app.MapControllers();
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<DefaultContext>();
+                dbContext.Database.Migrate();
+            }
+
             app.Run();
         }
         catch (Exception ex)

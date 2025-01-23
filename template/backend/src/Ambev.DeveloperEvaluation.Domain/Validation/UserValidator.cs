@@ -1,5 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
-using Ambev.DeveloperEvaluation.Domain.Enums;
+using Ambev.DeveloperEvaluation.Domain.Enums.Usres;
 using FluentValidation;
 
 namespace Ambev.DeveloperEvaluation.Domain.Validation;
