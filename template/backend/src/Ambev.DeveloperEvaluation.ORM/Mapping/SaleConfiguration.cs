@@ -40,7 +40,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Mapping
                 .IsRequired()
                 .HasColumnType("decimal(18, 2)");
 
-            builder.Property(s => s.SaleStatus)
+            builder.Property(s => s.Status)
                 .IsRequired()
                 .HasConversion<string>()
                 .HasMaxLength(20);

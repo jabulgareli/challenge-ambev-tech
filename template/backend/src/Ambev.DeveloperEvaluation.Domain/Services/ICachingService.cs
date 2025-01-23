@@ -1,0 +1,8 @@
+﻿namespace Ambev.DeveloperEvaluation.Domain.Services
+{
+    public interface ICachingService
+    {
+        Task SetAsync<T>(string key, T value, TimeSpan? expiration = null);
+        Task<T?> GetAsync<T>(string key);
+    }
+}
