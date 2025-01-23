@@ -1,6 +1,96 @@
-@Ambev.DeveloperEvaluation.WebApi_HostAddress = http://localhost:5119
+@Ambev.DeveloperEvaluation.WebApi_HostAddress = http://localhost:52867
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyM2MwYmNiZi04OTMyLTRkMGItOGEyYS03OTVlMzcyMzhkMDYiLCJ1bmlxdWVfbmFtZSI6IkNsaWVudGUiLCJyb2xlIjoiQ3VzdG9tZXIiLCJuYmYiOjE3Mzc2NzU2MDcsImV4cCI6MTczNzcwNDQwNywiaWF0IjoxNzM3Njc1NjA3fQ.2vtfHcAyNv5qo2DXx_PQYGjZN1ZtjWCHjhnX2YCRBg8
 
-GET {{Ambev.DeveloperEvaluation.WebApi_HostAddress}}/weatherforecast/
+GET  {{Ambev.DeveloperEvaluation.WebApi_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+### Criar Usuário (Cliente)
+POST {{Ambev.DeveloperEvaluation.WebApi_HostAddress}}/api/Users
+Content-Type: application/json
+
+{
+  "username": "Cliente",
+  "password": "Senha@123",
+  "phone": "555555555",
+  "email": "cliente@gmail.com",
+  "status": 1,
+  "role": 1
+}
+
+### Criar Usuário (Gerente)
+POST {{Ambev.DeveloperEvaluation.WebApi_HostAddress}}/api/Users
+Content-Type: application/json
+
+{
+  "username": "Gerente",
+  "password": "Senha@123",
+  "phone": "555555556",
+  "email": "gerente@gmail.com",
+  "status": 1,
+  "role": 2
+}
+
+### Autenticação do Cliente
+POST {{Ambev.DeveloperEvaluation.WebApi_HostAddress}}/api/Auth
+Content-Type: application/json
+
+{
+  "email": "cliente@gmail.com",
+  "password": "Senha@123"
+}
+
+### Autenticação do Gerente
+POST {{Ambev.DeveloperEvaluation.WebApi_HostAddress}}/api/Auth
+Content-Type: application/json
+
+{
+  "email": "gerente@gmail.com",
+  "password": "Senha@123"
+}
+
+### Criar Venda
+POST {{Ambev.DeveloperEvaluation.WebApi_HostAddress}}/api/Sales
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "saleNumber": "123456",
+  "saleDate": "2025-01-23T12:00:00Z",
+  "customerId": "b96b4c90-fc4a-4c0c-98fb-b24d60f6e3cc",
+  "customerName": "Cliente X",
+  "branchId": "dcb5a3eb-5d5d-4d9c-8bba-52c680f67b29",
+  "branchName": "Filial A",
+  "items": [
+    {
+      "productId": "6e4bdaeb-6884-4c8f-a2b7-0c2e5ae7f5eb",
+      "productName": "Produto 1",
+      "quantity": 2,
+      "unitPrice": 100.50
+    }
+  ]
+}
+
+### Obter Venda por ID
+GET {{Ambev.DeveloperEvaluation.WebApi_HostAddress}}/api/Sales/{{id}}
+Authorization: Bearer {{token}}
+
+### Cancelar Venda
+PATCH {{Ambev.DeveloperEvaluation.WebApi_HostAddress}}/api/Sales/{{id}}/satus/cancel
+Authorization: Bearer {{token}}
+
+### Cancelar Produto de uma Venda
+PATCH {{Ambev.DeveloperEvaluation.WebApi_HostAddress}}/api/Sales/{{id}}/products/{{productId}}/cancel
+Authorization: Bearer {{token}}
+
+### Deletar Venda
+DELETE {{Ambev.DeveloperEvaluation.WebApi_HostAddress}}/api/Sales/{{id}}
+Authorization: Bearer {{token}}
+
+### Obter Usuário por ID
+GET {{Ambev.DeveloperEvaluation.WebApi_HostAddress}}/api/Users/{{id}}
+Authorization: Bearer {{token}}
+
+### Deletar Usuário
+DELETE {{Ambev.DeveloperEvaluation.WebApi_HostAddress}}/api/Users/{{id}}
+Authorization: Bearer {{token}}
