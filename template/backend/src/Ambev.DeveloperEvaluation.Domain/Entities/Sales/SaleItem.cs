@@ -8,13 +8,13 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities.Sales
         public required string ProductName { get; init; }
         public int Quantity { get; init; }
         public decimal UnitPrice { get; init; }
-        public decimal Discount { get; set; }
+        public decimal Discount { get; internal set; }
         public decimal TotalAmount { get; internal set; }
-        public SaleItemStatus Status { get; set; }
+        public SaleItemStatus Status { get; set; } = SaleItemStatus.Active;
 
         internal bool Cancel()
         {
-            if (Status != SaleItemStatus.Concluded)
+            if (Status != SaleItemStatus.Active)
                 return false;
 
             Status = SaleItemStatus.Cancelled;
