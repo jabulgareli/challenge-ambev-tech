@@ -1,10 +1,12 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
 using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
+using Ambev.DeveloperEvaluation.Domain.Enums.Usres;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
@@ -17,6 +19,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
         ILogger<SalesController> logger) : BaseController
     {
 
+        [Authorize]
         [HttpPost]
         [ProducesResponseType(typeof(ApiResponseWithData<CreateSaleResponse>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
@@ -52,6 +55,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
             }
         }
 
+        [Authorize(Roles = $"{nameof(UserRole.Admin)}, {nameof(UserRole.Manager)}")]
         [HttpPatch("{id}/satus/cancel")]
         [ProducesResponseType(typeof(ApiResponseWithData<CreateSaleResponse>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
@@ -82,9 +86,11 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
             }
         }
 
+        [Authorize(Roles = $"{nameof(UserRole.Admin)}, {nameof(UserRole.Manager)}")]
         [HttpPatch("{id}/products/{productId}/cancel")]
         [ProducesResponseType(typeof(ApiResponseWithData<CreateSaleResponse>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CancelItemAsync(
             [FromRoute] Guid id,
@@ -104,6 +110,81 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
                     StatusCodes.Status404NotFound => NotFound(new ApiResponse { Message = response.Message, Success = false }),
                     _ => StatusCode(response.Code)
                 };
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(new ApiResponse { Message = ex.Message, Success = false });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message, ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [Authorize(Roles = $"{nameof(UserRole.Admin)}, {nameof(UserRole.Manager)}")]
+        [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(ApiResponseWithData<CreateSaleResponse>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteSaleAsync(
+            [FromRoute] Guid id,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                return Ok();
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(new ApiResponse { Message = ex.Message, Success = false });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message, ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [Authorize]
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(ApiResponseWithData<CreateSaleResponse>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetByIdAsync(
+            [FromRoute] Guid id,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                return Ok();
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(new ApiResponse { Message = ex.Message, Success = false });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message, ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [Authorize]
+        [HttpGet]
+        [ProducesResponseType(typeof(ApiResponseWithData<CreateSaleResponse>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> SearchAsync(
+            [FromRoute] Guid id,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                return Ok();
             }
             catch (ValidationException ex)
             {
