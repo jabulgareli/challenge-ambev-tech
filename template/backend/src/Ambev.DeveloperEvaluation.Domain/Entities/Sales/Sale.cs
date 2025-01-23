@@ -1,6 +1,7 @@
 ﻿using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Enums.Sales;
+using Ambev.DeveloperEvaluation.Domain.Events.Sales;
 using Ambev.DeveloperEvaluation.Domain.Specifications.Sales;
 using Ambev.DeveloperEvaluation.Domain.Validation;
 
@@ -27,9 +28,11 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities.Sales
         public required string BranchName { get; init; }
 
         public decimal TotalAmount { get; private set; }
-        public IEnumerable<SaleItem> Items { get; private set; } = [];
+        public ICollection<SaleItem> Items { get; private set; } = [];
 
-        public SaleStatus SaleStatus { get; init; }
+        public SaleStatus Status { get; set; } = SaleStatus.Active;
+        public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
 
         public ValidationResultDetail Validate()
         {
@@ -42,6 +45,16 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities.Sales
             };
         }
 
+        public void Modify()
+        {
+            UpdatedAt = DateTime.UtcNow;
+            AddDomainEvent(new SaleModifiedEvent(Id, UpdatedAt.Value));
+        }
+
+        public void Finish()
+        {
+            AddDomainEvent(new SaleCreatedEvent(Id, SaleNumber));
+        }
 
         public void AggregateItems()
         {
@@ -57,7 +70,8 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities.Sales
                         Quantity = group.Sum(item => item.Quantity),
                         UnitPrice = firstItem.UnitPrice,
                         Discount = 0,
-                        TotalAmount = group.Sum(item => item.Quantity * item.UnitPrice)
+                        TotalAmount = group.Sum(item => item.Quantity * item.UnitPrice),
+                        Status = firstItem.Status
                     };
                 })
                 .ToList();
@@ -101,6 +115,16 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities.Sales
             TotalAmount = GetAvailableItems().Sum(item => item.TotalAmount);
         }
 
+        public void Cancel()
+        {
+            if (Status == SaleStatus.Cancelled)
+                return;
+
+            Status = SaleStatus.Cancelled;
+            AddDomainEvent(new SaleCancelledEvent(this.Id));
+        }
+
+
         public bool CancelItem(Guid productId)
         {
             var itemToRemove = Items.FirstOrDefault(item => item.ProductId == productId);
@@ -108,9 +132,26 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities.Sales
             if (itemToRemove is null)
                 return false;
 
-            return itemToRemove.Cancel();
+            var result = itemToRemove.Cancel();
+
+            AddDomainEvent(new ItemCancelledEvent(Id, productId));
+
+            if (!GetAvailableItems().Any())
+                Cancel();
+
+            return result;
         }
 
-        public IEnumerable<SaleItem> GetAvailableItems() => Items.Where(i => i.Status == SaleItemStatus.Cancelled);
+        public IEnumerable<SaleItem> GetAvailableItems()
+        {
+            var spec = new ItemAvailableSpecification();
+            return Items.Where(spec.IsSatisfiedBy);
+        }
+
+        public bool CanCancel()
+        {
+            var spec = new CanCancelSaleSpecification();
+            return spec.IsSatisfiedBy(this);
+        }
     }
 }

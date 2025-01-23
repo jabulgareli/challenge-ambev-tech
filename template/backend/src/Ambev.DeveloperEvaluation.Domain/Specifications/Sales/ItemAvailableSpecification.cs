@@ -3,11 +3,11 @@ using Ambev.DeveloperEvaluation.Domain.Specifications.Bases;
 
 namespace Ambev.DeveloperEvaluation.Domain.Specifications.Sales
 {
-    public class ValidDiscountRangeSpecification : Specification<SaleItem>
+    public class ItemAvailableSpecification : Specification<SaleItem>
     {
-        public override bool IsSatisfiedBy(SaleItem item)
+        public override bool IsSatisfiedBy(SaleItem entity)
         {
-            return item.Quantity >= 4 && item.Quantity <= 20;
+            return entity.Status != Enums.Sales.SaleItemStatus.Cancelled;
         }
     }
 }

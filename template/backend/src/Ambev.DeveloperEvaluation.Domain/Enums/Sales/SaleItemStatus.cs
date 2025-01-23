@@ -3,7 +3,7 @@
     public enum SaleItemStatus
     {
         None = 0,
-        Concluded,
+        Active,
         Cancelled,
     }
 }
