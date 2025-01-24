@@ -167,5 +167,11 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities.Sales
             var spec = new CanCancelSaleSpecification();
             return spec.IsSatisfiedBy(this);
         }
+
+        public bool IsCanceled()
+        {
+            var spec = new SaleIsCanceledSpecification();
+            return spec.IsSatisfiedBy(this);
+        }
     }
 }

@@ -26,6 +26,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale
             var createdSale = await repository.GetByIdAsync(command.Id, cancellationToken);
 
             if (createdSale is null) return Result.Fail("Sale not found", 404);
+            if (createdSale.IsCanceled()) return Result.Fail("This sale is canceled", 400);
 
             createdSale.Modify(sale);
 
