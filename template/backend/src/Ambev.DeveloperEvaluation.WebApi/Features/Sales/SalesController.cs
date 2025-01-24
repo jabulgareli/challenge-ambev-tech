@@ -1,8 +1,13 @@
-﻿using Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
+﻿using Ambev.DeveloperEvaluation.Application.Sales.CanceItem;
+using Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
 using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
+using Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
+using Ambev.DeveloperEvaluation.Application.Sales.GetSaleById;
+using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.Domain.Enums.Usres;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
@@ -57,7 +62,8 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
 
         [Authorize(Roles = $"{nameof(UserRole.Admin)}, {nameof(UserRole.Manager)}")]
         [HttpPatch("{id}/satus/cancel")]
-        [ProducesResponseType(typeof(ApiResponseWithData<CreateSaleResponse>), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CancelSaleAsync([FromRoute] Guid id, CancellationToken cancellationToken)
@@ -88,7 +94,8 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
 
         [Authorize(Roles = $"{nameof(UserRole.Admin)}, {nameof(UserRole.Manager)}")]
         [HttpPatch("{id}/products/{productId}/cancel")]
-        [ProducesResponseType(typeof(ApiResponseWithData<CreateSaleResponse>), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -124,8 +131,8 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
 
         [Authorize(Roles = $"{nameof(UserRole.Admin)}, {nameof(UserRole.Manager)}")]
         [HttpDelete("{id}")]
-        [ProducesResponseType(typeof(ApiResponseWithData<CreateSaleResponse>), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteSaleAsync(
@@ -134,7 +141,61 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
         {
             try
             {
-                return Ok();
+                var command = new DeleteSaleCommand(id);
+                var response = await mediator.Send(command, cancellationToken);
+
+                if (response.IsSuccess) return Ok();
+
+                return response.Code switch
+                {
+                    StatusCodes.Status404NotFound => NotFound(new ApiResponse { Message = response.Message, Success = false }),
+                    _ => StatusCode(response.Code)
+                };
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(new ApiResponse { Message = ex.Message, Success = false });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message, ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+
+        [Authorize(Roles = $"{nameof(UserRole.Admin)}, {nameof(UserRole.Manager)}")]
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateSaleAsync(
+           [FromRoute] Guid id,
+           [FromBody] UpdateSaleRequest request,
+           CancellationToken cancellationToken)
+        {
+            try
+            {
+                var validator = new UpdateSaleRequestValidator();
+                var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+                if (!validationResult.IsValid)
+                    return BadRequest(validationResult.Errors);
+
+                var command = mapper.Map<UpdateSaleCommand>(request);
+                command.Id = id;
+                var response = await mediator.Send(command, cancellationToken);
+
+                if (response.IsSuccess) return Ok();
+
+                return response.Code switch
+                {
+                    StatusCodes.Status400BadRequest => BadRequest(new ApiResponse { Message = response.Message, Success = false }),
+                    StatusCodes.Status404NotFound => NotFound(new ApiResponse { Message = response.Message, Success = false }),
+                    _ => StatusCode(response.Code)
+                };
             }
             catch (ValidationException ex)
             {
@@ -149,8 +210,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
 
         [Authorize]
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(ApiResponseWithData<CreateSaleResponse>), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(GetSaleByIdResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetByIdAsync(
@@ -159,9 +219,18 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
         {
             try
             {
-                return Ok();
+                var command = new GetSaleByIdCommand(id);
+                var response = await mediator.Send(command, cancellationToken);
+
+                if (response.IsSuccess) return Ok(response.Data);
+
+                return response.Code switch
+                {
+                    StatusCodes.Status404NotFound => NotFound(new ApiResponse { Message = response.Message, Success = false }),
+                    _ => StatusCode(response.Code)
+                };
             }
-            catch (ValidationException ex)
+            catch (ValidationException ex) 
             {
                 return BadRequest(new ApiResponse { Message = ex.Message, Success = false });
             }
@@ -174,7 +243,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
 
         [Authorize]
         [HttpGet]
-        [ProducesResponseType(typeof(ApiResponseWithData<CreateSaleResponse>), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
