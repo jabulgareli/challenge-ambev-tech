@@ -1,0 +1,29 @@
+﻿using FluentValidation;
+
+namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale
+{
+    internal class UpdateSaleRequestValidator : AbstractValidator<UpdateSaleRequest>
+    {
+        public UpdateSaleRequestValidator()
+        {
+            RuleFor(sale => sale.SaleNumber).NotEmpty().Length(1, 200);
+            RuleFor(sale => sale.SaleDate).GreaterThan(DateTime.MinValue).LessThanOrEqualTo(DateTime.UtcNow);
+            RuleFor(sale => sale.CustomerId).NotEmpty();
+            RuleFor(sale => sale.CustomerName).NotEmpty().Length(1, 200);
+            RuleFor(sale => sale.BranchId).NotEmpty();
+            RuleFor(sale => sale.BranchName).NotEmpty().Length(1, 200);
+            RuleFor(sale => sale.Items).NotEmpty().ForEach(item => item.SetValidator(new UpdateSaleItemRequestValidator()));
+        }
+    }
+
+    internal class UpdateSaleItemRequestValidator : AbstractValidator<UpdateSaleItemRequest>
+    {
+        public UpdateSaleItemRequestValidator()
+        {
+            RuleFor(item => item.ProductId).NotEmpty();
+            RuleFor(item => item.ProductName).NotEmpty().Length(1, 200);
+            RuleFor(item => item.Quantity).GreaterThan(0);
+            RuleFor(item => item.UnitPrice).GreaterThan(0);
+        }
+    }
+}
