@@ -3,10 +3,12 @@ using Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
 using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSaleById;
+using Ambev.DeveloperEvaluation.Application.Sales.ListSales;
 using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.Domain.Enums.Usres;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSaleById;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 using AutoMapper;
@@ -211,7 +213,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
 
         [Authorize]
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(GetSaleByIdResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(GetSaleByIdResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetByIdAsync(
@@ -223,7 +225,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
                 var command = new GetSaleByIdCommand(id);
                 var response = await mediator.Send(command, cancellationToken);
 
-                if (response.IsSuccess) return Ok(response.Data);
+                if (response.IsSuccess) return Ok(mapper.Map<GetSaleByIdResponse>(response.Data));
 
                 return response.Code switch
                 {

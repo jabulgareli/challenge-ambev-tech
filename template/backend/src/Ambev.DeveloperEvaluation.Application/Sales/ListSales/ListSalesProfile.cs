@@ -1,8 +1,7 @@
-﻿using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
-using Ambev.DeveloperEvaluation.Domain.Entities.Sales;
+﻿using Ambev.DeveloperEvaluation.Domain.Entities.Sales;
 using AutoMapper;
 
-namespace Ambev.DeveloperEvaluation.Application.Sales.GetSaleById
+namespace Ambev.DeveloperEvaluation.Application.Sales.ListSales
 {
     internal class ListSalesProfile : Profile
     {
