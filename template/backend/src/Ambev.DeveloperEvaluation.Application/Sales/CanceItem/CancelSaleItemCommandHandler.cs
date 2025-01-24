@@ -4,7 +4,7 @@ using Ambev.DeveloperEvaluation.Domain.Results;
 using Ambev.DeveloperEvaluation.Domain.Services;
 using MediatR;
 
-namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale
+namespace Ambev.DeveloperEvaluation.Application.Sales.CanceItem
 {
     public class CancelSaleItemCommandHandler(
         ISaleRepository repository,

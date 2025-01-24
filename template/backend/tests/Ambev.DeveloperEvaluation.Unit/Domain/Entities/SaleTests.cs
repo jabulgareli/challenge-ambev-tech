@@ -96,10 +96,10 @@ namespace Ambev.DeveloperEvaluation.Unit.Domain.Entities
             items[0].Discount.Should().Be(0m);
             items[0].TotalAmount.Should().Be(60m);
 
-            items[1].Discount.Should().Be(0.10m);
+            items[1].Discount.Should().Be(7.5m);
             items[1].TotalAmount.Should().Be(67.5m);
 
-            items[2].Discount.Should().Be(0.20m);
+            items[2].Discount.Should().Be(24);
             items[2].TotalAmount.Should().Be(96m);
         }
 

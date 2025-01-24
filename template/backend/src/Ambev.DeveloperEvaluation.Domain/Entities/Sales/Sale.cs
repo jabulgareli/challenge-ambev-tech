@@ -19,13 +19,13 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities.Sales
         private const decimal TwentyPercentDiscount = 0.20m;
         private const decimal NoDiscount = 0;
 
-        public required string SaleNumber { get; init; }
-        public DateTime SaleDate { get; init; }
+        public required string SaleNumber { get; set; }
+        public DateTime SaleDate { get; set; }
 
-        public required Guid CustomerId { get; init; }
-        public required string CustomerName { get; init; }
-        public required Guid BranchId { get; init; }
-        public required string BranchName { get; init; }
+        public required Guid CustomerId { get; set; }
+        public required string CustomerName { get; set; }
+        public required Guid BranchId { get; set; }
+        public required string BranchName { get; set; }
 
         public decimal TotalAmount { get; private set; }
         public ICollection<SaleItem> Items { get; private set; } = [];
@@ -45,9 +45,23 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities.Sales
             };
         }
 
-        public void Modify()
+        public void Modify(Sale sale)
         {
+            SaleNumber = sale.SaleNumber;
+            SaleDate = sale.SaleDate;
+            CustomerId = sale.CustomerId;
+            CustomerName = sale.CustomerName;
+            BranchId = sale.BranchId;
+            BranchName = sale.BranchName;
+
+
+            Items = new List<SaleItem>();
+            Items = sale.Items;
+            
             UpdatedAt = DateTime.UtcNow;
+
+            RecalculateTotalAmount();
+
             AddDomainEvent(new SaleModifiedEvent(Id, UpdatedAt.Value));
         }
 
@@ -86,8 +100,8 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities.Sales
             foreach (var item in GetAvailableItems())
             {
                 var discount = CalculateDiscountTier(item.Quantity);
-                item.Discount = discount;
-                item.TotalAmount = item.Quantity * item.UnitPrice * (1 - discount);
+                item.Discount = decimal.Round(item.Quantity * item.UnitPrice * discount, 2);
+                item.TotalAmount = decimal.Round(item.Quantity * item.UnitPrice * (1 - discount), 2);
             }
 
             RecalculateTotalAmount();
