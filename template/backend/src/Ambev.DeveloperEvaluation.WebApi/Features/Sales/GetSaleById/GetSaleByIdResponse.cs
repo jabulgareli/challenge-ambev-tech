@@ -1,8 +1,8 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Enums.Sales;
 
-namespace Ambev.DeveloperEvaluation.Application.Sales.ListSales
+namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSaleById
 {
-    public class ListSalesResult
+    public class GetSaleByIdResponse
     {
         public string SaleNumber { get; set; } = string.Empty;
         public DateTime SaleDate { get; set; } = DateTime.MinValue;
@@ -15,10 +15,10 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.ListSales
         public SaleStatus Status { get; set; }
         public decimal TotalAmount { get; set; }
 
-        public IEnumerable<ListSalesItemResult> Items { get; set; } = [];
+        public IEnumerable<GetSaleByIdItemResponse> Items { get; set; } = [];
     }
 
-    public class ListSalesItemResult
+    public class GetSaleByIdItemResponse
     {
         public Guid ProductId { get; set; }
         public string ProductName { get; set; } = string.Empty;
