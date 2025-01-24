@@ -1,11 +1,10 @@
-﻿using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
-using Ambev.DeveloperEvaluation.Domain.Entities.Sales;
+﻿using Ambev.DeveloperEvaluation.Domain.Entities.Sales;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Results;
 using AutoMapper;
 using MediatR;
 
-namespace Ambev.DeveloperEvaluation.Application.Sales.GetSaleById
+namespace Ambev.DeveloperEvaluation.Application.Sales.ListSales
 {
     public class ListSalesCommandHandler(
         ISaleRepository repository,

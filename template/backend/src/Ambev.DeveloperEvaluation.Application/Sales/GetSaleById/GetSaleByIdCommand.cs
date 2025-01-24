@@ -1,5 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
-using Ambev.DeveloperEvaluation.Domain.Results;
+﻿using Ambev.DeveloperEvaluation.Domain.Results;
 using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.GetSaleById
