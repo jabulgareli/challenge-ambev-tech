@@ -1,4 +1,6 @@
-﻿namespace Ambev.DeveloperEvaluation.Domain.Results
+﻿using System.Collections.Generic;
+
+namespace Ambev.DeveloperEvaluation.Domain.Results
 {
     public class Result
     {
@@ -22,19 +24,20 @@
         public static DataResult<T> Success(T data, string message = "") => new() { Data = data,  IsSuccess = true, Message = message };
     }
 
-    public class PaginatedResult<T>
+    public class PagedResult<T>
     {
         public bool IsSuccess { get; set; } = true;
         public string Message { get; set; } = string.Empty;
         public int Code { get; set; }
-        public T? Data { get; set; }
+        public IEnumerable<T>? Data { get; set; }
 
         public int PageSize { get; set; }
-        public int CurrentPage { get; set; }
+        public int Page { get; set; }
         public int TotalPages { get; set; }
+        public int TotalCount { get; set; }
 
-        public static PaginatedResult<T> Fail(string message, int code = 500) => new PaginatedResult<T> { IsSuccess = false, Message = message, Code = code };
-        public static PaginatedResult<T> Success(T data, int pageNumber, int pageSize, int totalCount) =>
-            new() { IsSuccess = true, Data = data, PageSize = pageSize, CurrentPage = pageNumber, TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize) };
+        public static PagedResult<T> Fail(string message, int code = 500) => new PagedResult<T> { IsSuccess = false, Message = message, Code = code };
+        public static PagedResult<T> Success(IEnumerable<T> data, int page, int pageSize, int totalCount) =>
+            new() { IsSuccess = true, Data = data, PageSize = pageSize, Page = page, TotalCount = totalCount, TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize) };
     }
 }

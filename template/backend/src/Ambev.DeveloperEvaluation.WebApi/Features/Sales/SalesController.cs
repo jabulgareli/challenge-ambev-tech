@@ -248,12 +248,36 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> SearchAsync(
-            [FromRoute] Guid id,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] Guid? customerId = null,
+            [FromQuery] Guid? branchId = null,
+            [FromQuery] string? saleNumber = null)
         {
+
             try
             {
-                return Ok();
+                var command = new ListSalesCommand(page, pageSize, saleNumber, customerId, branchId);
+                var response = await mediator.Send(command, cancellationToken);
+
+                if (response.IsSuccess)
+                {
+                    return Ok(new PaginatedResponse<ListSalesResult>
+                    {
+                        Data = response.Data,
+                        CurrentPage = response.Page,
+                        TotalPages = response.TotalPages,
+                        TotalCount = response.TotalCount,
+                        Success = true
+                    });
+                }
+
+                return response.Code switch
+                {
+                    StatusCodes.Status404NotFound => NotFound(new ApiResponse { Message = response.Message, Success = false }),
+                    _ => StatusCode(response.Code)
+                };
             }
             catch (ValidationException ex)
             {
