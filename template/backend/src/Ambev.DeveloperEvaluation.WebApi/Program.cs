@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using StackExchange.Redis;
+using System;
 
 namespace Ambev.DeveloperEvaluation.WebApi;
 
@@ -29,6 +30,7 @@ public class Program
             builder.Services.AddEndpointsApiExplorer();
 
             builder.AddBasicHealthChecks();
+
             builder.Services.AddSwaggerGen(options =>
             {
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -57,6 +59,7 @@ public class Program
                 });
             });
 
+            //Postgress
             builder.Services.AddDbContext<DefaultContext>(options =>
                 options.UseNpgsql(
                     builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -64,6 +67,14 @@ public class Program
                 )
             );
 
+            //MongoDB
+            var mongoConnectionString = builder.Configuration.GetConnectionString("MongoConnection");
+            ArgumentException.ThrowIfNullOrWhiteSpace(mongoConnectionString, nameof(mongoConnectionString));
+
+            builder.Services.AddDbContext<NoSqlContext>(options =>
+                options.UseMongoDB(mongoConnectionString, "DeveloperEvaluation"));
+
+            //Redis
             var redisConnectionString = builder.Configuration.GetConnectionString("RedisConnection");
             ArgumentException.ThrowIfNullOrWhiteSpace(redisConnectionString, nameof(redisConnectionString));
             builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>

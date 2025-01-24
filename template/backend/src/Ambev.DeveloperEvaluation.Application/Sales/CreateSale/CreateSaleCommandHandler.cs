@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale
 {
-    public class CreateSaleHandler(
+    public class CreateSaleCommandHandler(
         ISaleRepository repository,
         IMapper mapper,
         IEventBusService eventBusService) : IRequestHandler<CreateSaleCommand, CreateSaleResult>
