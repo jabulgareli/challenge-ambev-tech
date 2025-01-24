@@ -8,6 +8,7 @@ O projeto está preparado apra ser executado com o docker-compose disponibilizad
 
  ```bash
 cd .\template\backend
+docker-compose build
 docker-compose up
  ```
 
@@ -20,7 +21,9 @@ cd .\template\backend\tests\Ambev.DeveloperEvaluation.Unit
 dotnet test
  ```
 
-Todos os endpoints estão com autenticação e autorização, deve-se pegar um token em /auth e adicionar um header Authorization: Bearer {token} para acessar os endpoints. 
+`Todos os endpoints estão com autenticação e autorização, deve-se pegar um token em /auth e adicionar um header Authorization: Bearer {token} para acessar os endpoints.`
+
+Você pode acessar o swagger local [aqui](https://localhost:8081/swagger/index.html).
 
 ### Comandos úteis
 
@@ -64,6 +67,8 @@ curl -X 'GET' \ 'https://localhost:64926/api/Sales?page=1&pageSize=10' \ -H 'acc
 -- Administradores e gerentes privilégios de cancelamento e deleções;
 - É possivel cancelar todos os itens da venda, um a um, e quando isso acontecer a venda também ficará marcada como cancelada;
 - Pesquisar todas as vendas de forma paginada, passando filtros opcionais de: Cliente, Filial e Numero da venda.
+- Endpoint para simulação de descontos
+-- Pode ser usado para o frontend saber qual desconto seria aplicado antes da venda ser efetivada
 
 ### Criação dos usuários
 ![Criação de usuário gerente e cliente](.doc/images/criacao-usuarios.gif)
@@ -77,12 +82,7 @@ curl -X 'GET' \ 'https://localhost:64926/api/Sales?page=1&pageSize=10' \ -H 'acc
 ### Cancelamento de itens com cancelamento de venda
 ![cancelamentos](.doc/images/cancelamento-de-itens.gif)
 
-## Instruções recebidas para resolução do desafio
-O projeto foi desenvolvido seguindo essas [instruções](/README.md).
-
 ## TODO
-- Criar endpoints para simulação de descontos
--- Podem ser úteis para o frontend mostrar qual o desconto antes da venda ser finalizada
 - Criar regras de desconto dinâmicas
 -- Endpoints para criar as faixas de desconto
 -- Adicionar faixas no cache com Redis
