@@ -1,86 +1,81 @@
 # Developer Evaluation Project
+[![wakatime](https://wakatime.com/badge/user/953a6bcd-5627-41d7-b03d-6e07c7380424/project/d1d03baf-4107-4e64-871a-40b9acc30246.svg)](https://wakatime.com/badge/user/953a6bcd-5627-41d7-b03d-6e07c7380424/project/d1d03baf-4107-4e64-871a-40b9acc30246)
 
-`READ CAREFULLY`
 
-## Instructions
-**The test below will have up to 7 calendar days to be delivered from the date of receipt of this manual.**
+## Instruções para execução
 
-- The code must be versioned in a public Github repository and a link must be sent for evaluation once completed
-- Upload this template to your repository and start working from it
-- Read the instructions carefully and make sure all requirements are being addressed
-- The repository must provide instructions on how to configure, execute and test the project
-- Documentation and overall organization will also be taken into consideration
+O projeto está preparado apra ser executado com o docker-compose disponibilizado:
 
-## Use Case
-**You are a developer on the DeveloperStore team. Now we need to implement the API prototypes.**
+ ```bash
+cd  template\backend
+docker-compose up
+ ```
 
-As we work with `DDD`, to reference entities from other domains, we use the `External Identities` pattern with denormalization of entity descriptions.
+O projeto também pode ser inicializado pelo visual studio executando o debug no projeto docker-compose.
 
-Therefore, you will write an API (complete CRUD) that handles sales records. The API needs to be able to inform:
+Para executar os testes:
 
-* Sale number
-* Date when the sale was made
-* Customer
-* Total sale amount
-* Branch where the sale was made
-* Products
-* Quantities
-* Unit prices
-* Discounts
-* Total amount for each item
-* Cancelled/Not Cancelled
+ ```bash
+cd  template\backend\tests\Ambev.DeveloperEvaluation.Unit
+dotnet test
+ ```
 
-It's not mandatory, but it would be a differential to build code for publishing events of:
-* SaleCreated
-* SaleModified
-* SaleCancelled
-* ItemCancelled
+Todos os endpoints estão com autenticação e autorização, deve-se pegar um token em /auth e adicionar um header Authorization: Bearer {token} para acessar os endpoints. 
 
-If you write the code, **it's not required** to actually publish to any Message Broker. You can log a message in the application log or however you find most convenient.
+### Comandos úteis
 
-### Business Rules
+#### Criar usuário (cliente)
+```curl
+curl -X 'POST' \ 'https://localhost:64926/api/Users' \ -H 'accept: text/plain' \ -H 'Content-Type: application/json' \ -d '{ "username": "João", "password": "João@123", "phone": "111111111", "email": "joao@gmail.com", "status": 1, "role": 1 }'
+```
+#### Criar usuário (gerente)
+```curl
+curl -X 'POST' \ 'https://localhost:64926/api/Users' \ -H 'accept: text/plain' \ -H 'Content-Type: application/json' \ -d '{ "username": "João", "password": "João@123", "phone": "111111111", "email": "joao_gerente@gmail.com", "status": 1, "role": 2 }'
+```
 
-* Purchases above 4 identical items have a 10% discount
-* Purchases between 10 and 20 identical items have a 20% discount
-* It's not possible to sell above 20 identical items
-* Purchases below 4 items cannot have a discount
+#### Obter token
+```curl
+curl -X 'POST' \ 'https://localhost:64926/api/Auth' \ -H 'accept: text/plain' \ -H 'Content-Type: application/json' \ -d '{ "email": "joao@gmail.com", "password": "João@123" }'
+```
 
-These business rules define quantity-based discounting tiers and limitations:
+#### Criar venda
+```curl
+curl -X 'POST' \ 'https://localhost:64926/api/Sales' \ -H 'accept: text/plain' \ -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJiMTc4YzZmMC1iZTU5LTQ4ODEtODExMS04MjI3Y2NjMTViYTIiLCJ1bmlxdWVfbmFtZSI6Ikpvw6NvIiwicm9sZSI6IkN1c3RvbWVyIiwibmJmIjoxNzM3Njg2NzQ3LCJleHAiOjE3Mzc3MTU1NDcsImlhdCI6MTczNzY4Njc0N30.0nUPH07AKmpv4TM0evicKg0XF5TmalONZDgRCZmg9Y4' \ -H 'Content-Type: application/json' \ -d '{ "saleNumber": "150", "saleDate": "2025-01-24T02:46:05.100Z", "customerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6", "customerName": "string", "branchId": "3fa85f64-5717-4562-b3fc-2c963f66afa6", "branchName": "string", "items": [ { "productId": "3fa85f64-5717-4562-b3fc-2c963f66afa6", "productName": "Doril", "quantity": 15, "unitPrice": 14.99 } ] }'
+```
+#### Cancelar item
+```curl
+curl -X 'PATCH' \ 'https://localhost:64926/api/Sales/6d2d448a-8b13-47d0-80ff-b5e867764bc6/satus/cancel' \ -H 'accept: */*' \ -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJmZTE4YWJjMS1mY2Y3LTQ1OWItODkyNy1iN2QxOGM1NTU5YzUiLCJ1bmlxdWVfbmFtZSI6Ikpvw6NvIiwicm9sZSI6Ik1hbmFnZXIiLCJuYmYiOjE3Mzc2ODY4NjIsImV4cCI6MTczNzcxNTY2MiwiaWF0IjoxNzM3Njg2ODYyfQ.LNyoijTHeX1gwKJynKuU4u3_PDdbpQ7bWrkNQYzYqXw'
+```
+#### Cancelar venda
+```curl
+curl -X 'PATCH' \ 'https://localhost:64926/api/Sales/6d2d448a-8b13-47d0-80ff-b5e867764bc6/products/3fa85f64-5717-4562-b3fc-2c963f66afa6/status/cancel' \ -H 'accept: */*' \ -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJmZTE4YWJjMS1mY2Y3LTQ1OWItODkyNy1iN2QxOGM1NTU5YzUiLCJ1bmlxdWVfbmFtZSI6Ikpvw6NvIiwicm9sZSI6Ik1hbmFnZXIiLCJuYmYiOjE3Mzc2ODY4NjIsImV4cCI6MTczNzcxNTY2MiwiaWF0IjoxNzM3Njg2ODYyfQ.LNyoijTHeX1gwKJynKuU4u3_PDdbpQ7bWrkNQYzYqXw'
+```
+ #### Consultar vendas paginada
+```curl
+curl -X 'GET' \ 'https://localhost:64926/api/Sales?page=1&pageSize=10' \ -H 'accept: */*' \ -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJmZTE4YWJjMS1mY2Y3LTQ1OWItODkyNy1iN2QxOGM1NTU5YzUiLCJ1bmlxdWVfbmFtZSI6Ikpvw6NvIiwicm9sZSI6Ik1hbmFnZXIiLCJuYmYiOjE3Mzc2ODY4NjIsImV4cCI6MTczNzcxNTY2MiwiaWF0IjoxNzM3Njg2ODYyfQ.LNyoijTHeX1gwKJynKuU4u3_PDdbpQ7bWrkNQYzYqXw'
+```
 
-1. Discount Tiers:
-   - 4+ items: 10% discount
-   - 10-20 items: 20% discount
+## Casos de uso
+- Criação de vendas seguindo as regras definidas nas instruções;
+- Quando existem dois itens com o mesmo produto, eles são agrupados;
+- As regras de desconto e quantidade devem ser aplicadas por produto;
+- Autenticação e autorização
+-- Clientes podem criar vendas, usuários e ler os dados;
+-- Administradores e gerentes privilégios de cancelamento e deleções;
+- É possivel cancelar todos os itens da venda, um a um, e quando isso acontecer a venda também ficará marcada como cancelada;
+- Pesquisar todas as vendas de forma paginada, passando filtros opcionais de: Cliente, Filial e Numero da venda.
 
-2. Restrictions:
-   - Maximum limit: 20 items per product
-   - No discounts allowed for quantities below 4 items
+### Criação dos usuários
+![Criação de usuário gerente e cliente](.docs/images/criacao-usuarios.gif)
 
-## Overview
-This section provides a high-level overview of the project and the various skills and competencies it aims to assess for developer candidates. 
+### Geração dos tokens
+![Obtenção de tokens por perfil](.docs/images/tokens.gif)
+### Criação de vendas
+![Criação de vendas](.docs/images/criacao-vendas.gif)
+### Agrupamento de itens do mesmo produto
+![Agrupamento de itens](.docs/images/agrupamento-itens.gif)
+### Cancelamento de itens com cancelamento de venda
+![cancelamentos](.docs/images/cancelamento-de-itens.gif)
 
-See [Overview](/.doc/overview.md)
-
-## Tech Stack
-This section lists the key technologies used in the project, including the backend, testing, frontend, and database components. 
-
-See [Tech Stack](/.doc/tech-stack.md)
-
-## Frameworks
-This section outlines the frameworks and libraries that are leveraged in the project to enhance development productivity and maintainability. 
-
-See [Frameworks](/.doc/frameworks.md)
-
-<!-- 
-## API Structure
-This section includes links to the detailed documentation for the different API resources:
-- [API General](./docs/general-api.md)
-- [Products API](/.doc/products-api.md)
-- [Carts API](/.doc/carts-api.md)
-- [Users API](/.doc/users-api.md)
-- [Auth API](/.doc/auth-api.md)
--->
-
-## Project Structure
-This section describes the overall structure and organization of the project files and directories. 
-
-See [Project Structure](/.doc/project-structure.md)
+## Instruções recebidas para resolução do desafio
+O projeto foi desenvolvido seguindo essas [instruções](/README.md).
