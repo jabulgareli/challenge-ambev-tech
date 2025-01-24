@@ -93,7 +93,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
         }
 
         [Authorize(Roles = $"{nameof(UserRole.Admin)}, {nameof(UserRole.Manager)}")]
-        [HttpPatch("{id}/products/{productId}/cancel")]
+        [HttpPatch("{id}/products/{productId}/status/cancel")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
