@@ -13,6 +13,12 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
             return sale;
         }
 
+        public async Task DeleteAsync(Sale sale, CancellationToken cancellationToken)
+        {
+            context.Sales.Remove(sale);
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
         public async Task<Sale?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
             return await context.Sales.FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
