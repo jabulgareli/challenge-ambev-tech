@@ -66,16 +66,16 @@ curl -X 'GET' \ 'https://localhost:64926/api/Sales?page=1&pageSize=10' \ -H 'acc
 - Pesquisar todas as vendas de forma paginada, passando filtros opcionais de: Cliente, Filial e Numero da venda.
 
 ### Criação dos usuários
-![Criação de usuário gerente e cliente](.docs/images/criacao-usuarios.gif)
+![Criação de usuário gerente e cliente](.doc/images/criacao-usuarios.gif)
 
 ### Geração dos tokens
-![Obtenção de tokens por perfil](.docs/images/tokens.gif)
+![Obtenção de tokens por perfil](.doc/images/tokens.gif)
 ### Criação de vendas
-![Criação de vendas](.docs/images/criacao-vendas.gif)
+![Criação de vendas](.doc/images/criacao-vendas.gif)
 ### Agrupamento de itens do mesmo produto
-![Agrupamento de itens](.docs/images/agrupamento-itens.gif)
+![Agrupamento de itens](.doc/images/agrupamento-itens.gif)
 ### Cancelamento de itens com cancelamento de venda
-![cancelamentos](.docs/images/cancelamento-de-itens.gif)
+![cancelamentos](.doc/images/cancelamento-de-itens.gif)
 
 ## Instruções recebidas para resolução do desafio
 O projeto foi desenvolvido seguindo essas [instruções](/README.md).
