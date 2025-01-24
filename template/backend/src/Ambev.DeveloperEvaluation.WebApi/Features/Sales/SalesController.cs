@@ -1,17 +1,12 @@
-﻿using Ambev.DeveloperEvaluation.Application.Sales.CalculateDiscount;
-using Ambev.DeveloperEvaluation.Application.Sales.CanceItem;
+﻿using Ambev.DeveloperEvaluation.Application.Sales.CanceItem;
 using Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
 using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSaleById;
-using Ambev.DeveloperEvaluation.Application.Sales.ListSales;
 using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.Domain.Enums.Usres;
 using Ambev.DeveloperEvaluation.WebApi.Common;
-using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CalculateDiscount;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
-using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSaleById;
-using Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 using AutoMapper;
 using FluentValidation;
@@ -65,42 +60,6 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
             }
         }
 
-        [Authorize]
-        [HttpPost("discounts/simulations")]
-        [ProducesResponseType(typeof(ApiResponseWithData<CreateSaleResponse>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> SimulateDiscountAsync([FromBody] CalculateDiscountRequest request, CancellationToken cancellationToken)
-        {
-            try
-            {
-                var validator = new CalculateDiscountRequestValidator();
-                var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-                if (!validationResult.IsValid)
-                    return BadRequest(validationResult.Errors);
-
-                var command = mapper.Map<CalculateDiscountCommand>(request);
-                var response = await mediator.Send(command, cancellationToken);
-
-                return Ok(new ApiResponseWithData<CalculateDiscountResponse>
-                {
-                    Success = true,
-                    Message = "Discount calculated successfully",
-                    Data = mapper.Map<CalculateDiscountResponse>(response)
-                });
-            }
-            catch (ValidationException ex)
-            {
-                return BadRequest(new ApiResponse { Message = ex.Message, Success = false });
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex.Message, ex);
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
-        }
-
         [Authorize(Roles = $"{nameof(UserRole.Admin)}, {nameof(UserRole.Manager)}")]
         [HttpPatch("{id}/satus/cancel")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -134,7 +93,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
         }
 
         [Authorize(Roles = $"{nameof(UserRole.Admin)}, {nameof(UserRole.Manager)}")]
-        [HttpPatch("{id}/products/{productId}/status/cancel")]
+        [HttpPatch("{id}/products/{productId}/cancel")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
@@ -251,7 +210,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
 
         [Authorize]
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(GetSaleByIdResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(GetSaleByIdResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetByIdAsync(
@@ -263,7 +222,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
                 var command = new GetSaleByIdCommand(id);
                 var response = await mediator.Send(command, cancellationToken);
 
-                if (response.IsSuccess) return Ok(mapper.Map<GetSaleByIdResponse>(response.Data));
+                if (response.IsSuccess) return Ok(response.Data);
 
                 return response.Code switch
                 {
@@ -284,7 +243,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
 
         [Authorize]
         [HttpGet]
-        [ProducesResponseType(typeof(PaginatedResponse<ListSaleResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -304,9 +263,9 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
 
                 if (response.IsSuccess)
                 {
-                    return Ok(new PaginatedResponse<ListSaleResponse>
+                    return Ok(new PaginatedResponse<ListSalesResult>
                     {
-                        Data = mapper.Map<IEnumerable<ListSaleResponse>>(response.Data),
+                        Data = response.Data,
                         CurrentPage = response.Page,
                         TotalPages = response.TotalPages,
                         TotalCount = response.TotalCount,

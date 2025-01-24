@@ -1,6 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Enums.Sales;
 
-namespace Ambev.DeveloperEvaluation.Application.Sales.ListSales
+namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale
 {
     public class ListSalesResult
     {
