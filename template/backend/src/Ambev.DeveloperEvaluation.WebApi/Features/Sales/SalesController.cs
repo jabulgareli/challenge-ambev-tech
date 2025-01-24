@@ -7,6 +7,7 @@ using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.Domain.Enums.Usres;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 using AutoMapper;
 using FluentValidation;
@@ -243,7 +244,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
 
         [Authorize]
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PaginatedResponse<ListSaleResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -263,9 +264,9 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
 
                 if (response.IsSuccess)
                 {
-                    return Ok(new PaginatedResponse<ListSalesResult>
+                    return Ok(new PaginatedResponse<ListSaleResponse>
                     {
-                        Data = response.Data,
+                        Data = mapper.Map<IEnumerable<ListSaleResponse>>(response.Data),
                         CurrentPage = response.Page,
                         TotalPages = response.TotalPages,
                         TotalCount = response.TotalCount,
