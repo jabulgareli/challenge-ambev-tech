@@ -1,4 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Application.Sales.ListSales;
+﻿using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 using AutoMapper;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSale
@@ -8,7 +8,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSale
         public ListSaleProfile()
         {
             CreateMap<ListSalesResult, ListSaleResponse>();
-            CreateMap<ListSalesItemResult, ListSaleItemResponse>();
+            CreateMap<ListSalesItemResult, ListSaleItemResult>();
         }
     }
 }

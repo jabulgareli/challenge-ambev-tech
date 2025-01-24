@@ -15,10 +15,10 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSale
         public SaleStatus Status { get; set; }
         public decimal TotalAmount { get; set; }
 
-        public IEnumerable<ListSaleItemResponse> Items { get; set; } = [];
+        public IEnumerable<ListSaleItemResult> Items { get; set; } = [];
     }
 
-    public class ListSaleItemResponse
+    public class ListSaleItemResult
     {
         public Guid ProductId { get; set; }
         public string ProductName { get; set; } = string.Empty;
