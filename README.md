@@ -79,3 +79,11 @@ curl -X 'GET' \ 'https://localhost:64926/api/Sales?page=1&pageSize=10' \ -H 'acc
 
 ## Instruções recebidas para resolução do desafio
 O projeto foi desenvolvido seguindo essas [instruções](/README.md).
+
+## TODO
+- Criar endpoints para simulação de descontos
+-- Podem ser úteis para o frontend mostrar qual o desconto antes da venda ser finalizada
+- Criar regras de desconto dinâmicas
+-- Endpoints para criar as faixas de desconto
+-- Adicionar faixas no cache com Redis
+-- Essa estrutura pode ser persistida no Mongo junto com algumas configurações
