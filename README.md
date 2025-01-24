@@ -7,7 +7,7 @@
 O projeto está preparado apra ser executado com o docker-compose disponibilizado:
 
  ```bash
-cd  template\backend
+cd .\template\backend
 docker-compose up
  ```
 
@@ -16,7 +16,7 @@ O projeto também pode ser inicializado pelo visual studio executando o debug no
 Para executar os testes:
 
  ```bash
-cd  template\backend\tests\Ambev.DeveloperEvaluation.Unit
+cd .\template\backend\tests\Ambev.DeveloperEvaluation.Unit
 dotnet test
  ```
 
